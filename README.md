@@ -1,5 +1,5 @@
 # GOY
-GOY model implementation in C, with various tweaks
+GOY model implementation in C, initialy written by Emmanuel Leveque, with various tweaks for IO, samplings, and reconstruction by N.B.G.
 
 # installation
 - download the full zip/tar and unzip it in some directory
