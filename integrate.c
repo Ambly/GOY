@@ -9,6 +9,10 @@ double sh[N];
 double X[N], Xp[N], Xpp[N];
 double Y[N], Yp[N], Ypp[N];
 
+/* same, but LP-filtered with FIR */
+double Xf[N];
+double Yf[N];
+
 /* terme non-lineaire */
 double NXp[N], NXpp[N];
 double NYp[N], NYpp[N];
@@ -62,10 +66,27 @@ void init_fields()
     compute_NX(Xp, Yp, NXp);
     compute_NY(Xp, Yp, NYp);
 
+    if (DO_FIR) reset_FIR();
     N_steps=0;
 }
 
+void reset_FIR()
+{   int i;
 
+    for(i=0; i<N; i++)
+    {   Xf[i]=0.;
+        Yf[i]=0.;
+    }
+}
+
+void normalize_FIR()
+{   int i;
+
+    for(i=0; i<N; i++)
+    {   Xf[i]/=N_fs;
+        Yf[i]/=N_fs;
+    }
+}
 
 void compute_NY(double *ax, double *ay, double *res)
 {   int k;
@@ -125,6 +146,11 @@ void integrate()
     for(i=0; i<N; i++)
     {   X[i] = A[i]*Xp[i] + 1.5*dt*A[i]*NXp[i] - 0.5*dt*A[i]*A[i]*NXpp[i] + dt*force1*D[i];
         Y[i] = A[i]*Yp[i] + 1.5*dt*A[i]*NYp[i] - 0.5*dt*A[i]*A[i]*NYpp[i] + dt*force2*D[i];
+    }
+    
+    if (DO_FIR)
+    {   Xf[i] += X[i];
+        Yf[i] += Y[i];
     }
 }
 

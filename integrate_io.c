@@ -34,6 +34,7 @@ void read_fields()
     fclose(fp);
     
     if (DO_STATS) read_stats();
+    if (DO_FIR)   reset_FIR();
 }
 
 

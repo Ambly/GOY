@@ -27,12 +27,20 @@ int main()
     
         if ((count%N_fs)==0)
         {   printf("remaining steps: %d\n", (int)(count/N_fs));
-            if (DO_SAVE)        save_data(X, Y);
-            if (DO_MOMENTS)     save_moments(X, Y); 
-            if (DO_RECONSTRUCT) save_reconstructed(X, Y, N_steps/fs);
+            if (DO_FIR)
+            {   normalize_FIR();
+                if (DO_SAVE)        save_data(Xf, Yf);
+//                if (DO_MOMENTS)     save_moments(Xf, Yf); 
+                if (DO_RECONSTRUCT) save_reconstructed(Xf, Yf, N_steps/fs);
+            }
+            else
+            {   if (DO_SAVE)        save_data(X, Y);
+//                if (DO_MOMENTS)     save_moments(X, Y); 
+                if (DO_RECONSTRUCT) save_reconstructed(X, Y, N_steps/fs);
+            }
             N_steps++;
         }
-    
+        
         /* evolve */
         for(i=0; i<N; i++)
         {   Xpp[i] = Xp[i];     Ypp[i] = Yp[i];
