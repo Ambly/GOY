@@ -149,8 +149,10 @@ void integrate()
     }
     
     if (DO_FIR)
-    {   Xf[i] += X[i];
-        Yf[i] += Y[i];
+    {   for(i=0; i<N; i++)
+        {   Xf[i] += X[i];
+            Yf[i] += Y[i];
+        }
     }
 }
 

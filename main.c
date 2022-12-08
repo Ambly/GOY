@@ -32,6 +32,7 @@ int main()
                 if (DO_SAVE)        save_data(Xf, Yf);
 //                if (DO_MOMENTS)     save_moments(Xf, Yf); 
                 if (DO_RECONSTRUCT) save_reconstructed(Xf, Yf, N_steps/fs);
+                reset_FIR();
             }
             else
             {   if (DO_SAVE)        save_data(X, Y);

@@ -12,7 +12,7 @@
 OBJS = integrate.o integrate_io.o stats_io.o
 
 run : $(OBJS) main.o 
-	$(CC) $(OBJS) main.o -o run
+	$(CC) $(OBJS) main.o -lm -o run
 	mkdir -p stats
 	mkdir -p tmp
 
