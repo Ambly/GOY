@@ -12,7 +12,7 @@ double Mp_flux[MOMENTS_ORDER_MAX][N];
 double mflux[N];
 long int N_stats;
 
-char filename[256];
+extern char filename[256];
 
 void init_moments()
 {   FILE *file;
