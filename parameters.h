@@ -2,9 +2,12 @@
 /* this file contains all adaptable parameters                              */
 /* Nicolas B. Garnier 2022-07-05                                            */
 /****************************************************************************/
+#define SABRA_MODEL 1
+#define GOY_MODEL   0
 
 /****************************************************************************/
 // model parameters:
+#define model_TYPE  GOY_MODEL
 #define force 0.005 // strength of the random forcing
 #define N_force 1   // mode which is forced
 #define force_rnd 1 // random forcing (1) or deterministic (0)
