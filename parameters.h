@@ -2,12 +2,11 @@
 /* this file contains all adaptable parameters                              */
 /* Nicolas B. Garnier 2022-07-05                                            */
 /****************************************************************************/
-#define SABRA_MODEL 1
-#define GOY_MODEL   0
+#define SABRA_MODEL
+// #define GOY_MODEL  // other possibility
 
 /****************************************************************************/
 // model parameters:
-#define model_TYPE  GOY_MODEL
 #define force 0.005 // strength of the random forcing
 #define N_force 1   // mode which is forced
 #define force_rnd 1 // random forcing (1) or deterministic (0)
@@ -39,3 +38,9 @@
 #define RECONSTRUCTED_FILE "v.dat"      // reconstructed velocity field (from DO_RECONSTRUCT)
 #define STATS_DIR "stats"               // where to save additional stats
 #define DATA_DIR "."                    // where to save data
+
+
+#ifdef SABRA_MODEL
+#define compute_NX compute_NX_Sabra
+#define compute_NY compute_NY_Sabra
+#endif
