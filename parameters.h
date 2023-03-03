@@ -43,4 +43,7 @@
 #ifdef SABRA_MODEL
 #define compute_NX compute_NX_Sabra
 #define compute_NY compute_NY_Sabra
+#else
+#define compute_NX compute_NX_GOY
+#define compute_NY compute_NY_GOY
 #endif
