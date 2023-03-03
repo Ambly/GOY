@@ -88,6 +88,7 @@ void normalize_FIR()
     }
 }
 
+
 void compute_NY(double *ax, double *ay, double *res)
 {   int k;
 
@@ -106,7 +107,6 @@ void compute_NY(double *ax, double *ay, double *res)
     
     for(k=0; k< N; k++) res[k] = res[k] * sh[k];
 }
-
 
 
 void compute_NX(double *ax, double *ay, double *res)
@@ -128,6 +128,45 @@ void compute_NX(double *ax, double *ay, double *res)
     for(k=0; k < N; k++) res[k] = res[k] * sh[k];
 }
 
+
+void compute_NY_Sabra(double *ax, double *ay, double *res)
+{   int k;
+
+    res[0] = ax[2]*ax[1] - ay[1]*ay[2];
+    res[1] = ax[3]*ax[2] - ay[2]*ay[3] + A2[1] * (ax[2]*ax[0] - ay[2]*ay[0]);
+  
+    for(k=2; k< N-2; k++)
+        res[k] = ax[k+2]*ax[k+1] - ay[k+1]*ay[k+2] 
+                + A2[k] * (ax[k+1]*ax[k-1] - ay[k+1]*ay[k-1]) 
+                + A3[k] * (ax[k-1]*ax[k-2] - ay[k-1]*ay[k-2]);
+  
+    res[N-2] = A2[N-2] * (ax[N-1]*ax[N-3] + ay[N-1]*ay[N-3]) 
+             + A3[N-2] * (ax[N-3]*ax[N-4] + ay[N-3]*ay[N-4]);
+  
+    res[N-1] = A3[N-1] * (ax[N-2]*ax[N-3] - ay[N-2]*ay[N-3]);  
+    
+    for(k=0; k< N; k++) res[k] = res[k] * sh[k];
+}
+
+
+void compute_NX_Sabra(double *ax, double *ay, double *res)
+{   int k;
+
+    res[0] = ax[2]*ay[1] + ay[2]*ax[1];
+    res[1] = ax[3]*ay[2] + ay[3]*ax[2] + A2[1] * (ax[2]*ay[0] + ay[2]*ax[0]);
+
+    for(k=2; k < N-2; k++)
+        res[k] = (ax[k+2]*ay[k+1] + ay[k+2]*ax[k+1])
+                + A2[k] * (ax[k+1]*ay[k-1] + ay[k+1]*ax[k-1])
+                + A3[k] * (ax[k-1]*ay[k-2] + ay[k-1]*ax[k-2]);
+
+    res[N-2] = A2[N-2] * (ax[N-1]*ay[N-3] + ay[N-1]*ax[N-3])
+             + A3[N-2] * (ax[N-3]*ay[N-4] + ay[N-3]*ax[N-4]);
+  
+    res[N-1] = A3[N-1] * (ax[N-2]*ay[N-3] + ay[N-2]*ax[N-3]);
+  
+    for(k=0; k < N; k++) res[k] = res[k] * sh[k];
+}
 
 
 void integrate()
