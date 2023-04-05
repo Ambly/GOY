@@ -34,7 +34,7 @@ void read_fields()
     fclose(fp);
     
     if (DO_STATS) read_stats();
-    if (DO_FIR)   reset_FIR();
+    if (DO_FIR) { reset_FIR(Xf);  reset_FIR(Yf); reset_FIR(flux_f); }
 }
 
 
@@ -59,6 +59,7 @@ void save_fields()
 }
 
 
+// to reset time traces files
 void reset_data()
 {   FILE *file;
 
@@ -69,27 +70,31 @@ void reset_data()
     sprintf(filename, "%s/%s", DATA_DIR, RECONSTRUCTED_FILE);
     file = fopen(filename, "w");
     fclose(file);
+    
+    sprintf(filename, "%s/%s", DATA_DIR, FLUX_DATA_FILE);
+    file = fopen(filename, "w");
+    fclose(file);
 }
 
 
-void save_data(double *X, double *Y)
+void save_data(double *my_X, double *my_Y)
 {   int i;
     FILE *file;
 
     sprintf(filename, "%s/%s", DATA_DIR, DATA_FILE);
     file = fopen(filename, "a");
-    for (i=0; i<N; i++) fprintf(file, "%g %g ", X[i], Y[i]);
+    for (i=0; i<N; i++) fprintf(file, "%g %g ", my_X[i], my_Y[i]);
     fprintf(file, "\n");
     fclose(file);
 }
 
 
-void save_reconstructed(double *X, double *Y, double t)
+void save_reconstructed(double *my_X, double *my_Y, double t)
 {   int i;
     double v=0;
     FILE *file;
 
-    for (i=0; i<N; i++) v += X[i]*cos(sh[i]*t) - Y[i]*sin(sh[i]*t);
+    for (i=0; i<N; i++) v += my_X[i]*cos(sh[i]*t) - my_Y[i]*sin(sh[i]*t);
     sprintf(filename, "%s/%s", DATA_DIR, RECONSTRUCTED_FILE);
     file = fopen(filename, "a");
     fprintf(file, "%g \n", v);

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "integrate.h"
+#include "stats_io.h"   // 2023-04-05: just for the time trace of the fluxes
 
 double sh[N];
 
@@ -66,30 +67,24 @@ void init_fields()
     compute_NX(Xp, Yp, NXp);
     compute_NY(Xp, Yp, NYp);
 
-    if (DO_FIR) reset_FIR();
+    if (DO_FIR) { reset_FIR(Xf);  reset_FIR(Yf); reset_FIR(flux_f); }
     N_steps=0;
 }
 
-void reset_FIR()
+void reset_FIR(double *x)
 {   int i;
 
-    for(i=0; i<N; i++)
-    {   Xf[i]=0.;
-        Yf[i]=0.;
-    }
+    for(i=0; i<N; i++)  x[i]=0.;
 }
 
-void normalize_FIR()
+void normalize_FIR(double *x)
 {   int i;
 
-    for(i=0; i<N; i++)
-    {   Xf[i]/=N_fs;
-        Yf[i]/=N_fs;
-    }
+    for(i=0; i<N; i++)  x[i]/=N_fs;
 }
 
 
-void compute_NY(double *ax, double *ay, double *res)
+void compute_NY_GOY(double *ax, double *ay, double *res)
 {   int k;
 
     res[0] = ax[2]*ax[1] - ay[1]*ay[2];
@@ -109,7 +104,7 @@ void compute_NY(double *ax, double *ay, double *res)
 }
 
 
-void compute_NX(double *ax, double *ay, double *res)
+void compute_NX_GOY(double *ax, double *ay, double *res)
 {   int k;
 
     res[0] = ax[2]*ay[1] + ay[2]*ax[1];

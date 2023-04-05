@@ -5,14 +5,44 @@
 #include "integrate.h"
 #include "stats_io.h"
 
-
 double Mp[MOMENTS_ORDER_MAX][N];
 double Mp_three[MOMENTS_ORDER_MAX][N];
 double Mp_flux[MOMENTS_ORDER_MAX][N];
-double mflux[N];
+double flux[N];         // flux from k to k+1
+double flux_f[N];       // same but LP-filtered with FIR
+double flux_mean[N];
 long int N_stats;
 
 extern char filename[256];
+
+void compute_flux()
+{   double mod_m, mod_p;
+    int i;
+    /* flux */
+    for(i=0; i<N-1; i++)
+    {
+	    if (i==0)       mod_m = 0;
+	    else            mod_m = Y[i+1]*(X[i-1]*X[i]-Y[i-1]*Y[i]) + X[i+1]*(X[i-1]*Y[i]+Y[i-1]*X[i]);
+	    
+	    if (i==(N-2))   mod_p = 0;
+	    else            mod_p = Y[i+2]*(X[i]*X[i+1]-Y[i]*Y[i+1]) + X[i+2]*(X[i]*Y[i+1]+Y[i]*X[i+1]);
+	
+      	flux[i] = -sh[i]*(mod_p + (1-eps)/lmb*mod_m);
+      	
+      	if (DO_FIR)     flux_f[i] += flux[i];
+    }
+}
+
+void save_flux(double *x)
+{   FILE *file;
+    int i;
+    
+    sprintf(filename, "%s/%s", DATA_DIR, FLUX_DATA_FILE);
+    file = fopen(filename, "a");
+    for (i=0; i<N-1; i++) fprintf(file, "%g ", x[i]);
+    fprintf(file, "\n");
+    fclose(file);
+}
 
 void init_moments()
 {   FILE *file;
@@ -24,14 +54,14 @@ void init_moments()
     N_stats=0;
 }
 
-void save_moments(double *X, double *Y)
+void save_moments(double *my_X, double *my_Y)
 {   int i, k;
     double mod, val;
     FILE *file;
 
     /* moments classiques */
     for (i=0; i<N; i++)
-    {   mod = sqrt(X[i]*X[i] + Y[i]*Y[i]);
+    {   mod = sqrt(my_X[i]*my_X[i] + my_Y[i]*my_Y[i]);
 	    val = mod;
 	    for (k=0; k<MOMENTS_ORDER_MAX; k++)
 	    { Mp[k][i] += val;
@@ -65,7 +95,7 @@ void save_stats()
 	        val= val*mod;
 	    }
     }
-    sprintf(filename, "%s/Moments_three", STATS_DIR);
+    sprintf(filename, "%s/%s", STATS_DIR, MOMENTS_THREE_FILE);
     fp = fopen(filename, "w");
     for (i=0; i<N; i++)
     {   for(k=0; k<MOMENTS_ORDER_MAX; k++)  fprintf(fp, "%g ", Mp_three[k][i]);
@@ -86,7 +116,7 @@ void save_stats()
 	        mod += ilmb2 * (Y[i+1]*(X[i-1]*X[i]-Y[i-1]*Y[i]) + X[i+1]*(X[i-1]*Y[i]+Y[i-1]*X[i]));
 	    }
 	
-      	mflux[i] += sh[i]*mod;
+      	flux_mean[i] += sh[i]*mod;
 	
       	if(mod<0) mod = -mod;
 	
@@ -98,7 +128,7 @@ void save_stats()
 	        val= val*mod;
 	    }
     }
-    sprintf(filename, "%s/Moments_flux", STATS_DIR);
+    sprintf(filename, "%s/%s", STATS_DIR, FLUX_MOMENTS_FILE);
     fp = fopen(filename, "w");
     for (i=0; i<N-1; i++)
     {   for(k=0; k<MOMENTS_ORDER_MAX; k++)  fprintf(fp, "%g ", Mp_flux[k][i]);
@@ -106,9 +136,9 @@ void save_stats()
     }
     fclose(fp);
 
-    sprintf(filename, "%s/mean_flux", STATS_DIR);
+    sprintf(filename, "%s/%s", STATS_DIR, FLUX_MEAN_FILE);
     fp = fopen(filename, "w");
-    for (i=0; i<N-1; i++)   fprintf(fp, "%g ", mflux[i]);
+    for (i=0; i<N-1; i++)   fprintf(fp, "%g ", flux_mean[i]);
     fclose(fp);
 
     N_stats++;
@@ -122,7 +152,7 @@ void read_stats()
 {   int i, k;
     FILE *fp;
 
-    sprintf(filename, "%s/Moments", STATS_DIR);
+    sprintf(filename, "%s/%s", STATS_DIR, MOMENTS_FILE);
     fp = fopen(filename, "r");
     for(i = 0; i < N; i++){
       for(k=0; k<MOMENTS_ORDER_MAX; k++)
@@ -131,7 +161,7 @@ void read_stats()
     }
     fclose(fp);
     
-    sprintf(filename, "%s/Moments_three", STATS_DIR);
+    sprintf(filename, "%s/%s", STATS_DIR, MOMENTS_THREE_FILE);
     fp = fopen(filename, "r");
     for(i = 0; i < N; i++){
       for(k=0; k<MOMENTS_ORDER_MAX; k++)
@@ -152,7 +182,7 @@ void read_stats()
     sprintf(filename, "%s/mean_flux", STATS_DIR);
     fp = fopen(filename, "r");
     for(i = 0; i < N-1; i++)
-      fscanf(fp, "%lg ", &(mflux[i]));
+      fscanf(fp, "%lg ", &(flux_mean[i]));
     fclose(fp);
     
     sprintf(filename, "%s/N_stats", STATS_DIR);

@@ -2,8 +2,8 @@
 /* this file contains all adaptable parameters                              */
 /* Nicolas B. Garnier 2022-07-05                                            */
 /****************************************************************************/
-#define SABRA_MODEL
-// #define GOY_MODEL  // other possibility
+#define GOY_MODEL   // main model
+// #define SABRA_MODEL // other possibility (WIP)
 
 /****************************************************************************/
 // model parameters:
@@ -26,9 +26,10 @@
 // behavioral paarameters:
 #define DO_CONTINUE 0                   // to continue the previous simulation
 #define DO_SAVE 1                       // to save time trace of shells
+#define DO_FLUX 1                       // to save time trace of fluxes between shells
 #define DO_MOMENTS 0                    // to compute and save moments
 #define DO_STATS 0                      // to compute additional statistics (useless)
-#define DO_RECONSTRUCT 1                // to output a "reconstructed" velocity signal
+#define DO_RECONSTRUCT 0                // to output a "reconstructed" velocity signal
 #define DO_FIR 1						// to low-pass filter time traces (anti-aliasing)
 										//	-> this impacts the ouputs of DO_SAVE and DO_RECONSTRUCT
 
@@ -39,11 +40,3 @@
 #define STATS_DIR "stats"               // where to save additional stats
 #define DATA_DIR "."                    // where to save data
 
-
-#ifdef SABRA_MODEL
-#define compute_NX compute_NX_Sabra
-#define compute_NY compute_NY_Sabra
-#else
-#define compute_NX compute_NX_GOY
-#define compute_NY compute_NY_GOY
-#endif

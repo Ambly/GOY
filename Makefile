@@ -17,7 +17,7 @@ run : $(OBJS) main.o
 	mkdir -p tmp
 
 %.o : %.c parameters.h
-	$(CC) -Wall -c $<
+	$(CC) -Wall -Wextra -Wshadow -Wpointer-arith -Wundef -Wunreachable-code -c $<
 
 clean :
 	rm -f *.o run
