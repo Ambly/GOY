@@ -8,9 +8,10 @@ GOY model implementation in C, initialy written by Emmanuel Leveque, with variou
 # use
 - set the parameters you want in the "parameters.h" file. It is strongly advised to keep the "parameters.h" file alongside the results, in order to keep track of the very parameters used in the simulation.
 - run the code by typing "./run".
-  Depending on your requirements in "parameters.h", several files will becreated, containing
-     - the time evolution of ethe various shells  --> file "data.dat"
-     - the reconstructed velocity signal  --> file "v.dat"
+  Depending on your requirements in "parameters.h", several files will be created, containing:
+     - the time evolution of the various shells  --> file "data.dat"
+     - the reconstructed velocity signal  --> file "v.dat" (if you asked for the reconstruction with the option DO_RECONSTRUCT)
+     - the time evolution of the flux of energy betweeen shell k and k+1 --> file "flux.dat" (if you asked for with the option DO_FLUX)
      - ...
      
 # tips
